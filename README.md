@@ -297,3 +297,157 @@ void main(){
     + Không thể truy cập được địa chỉ của từng bit
     + Vị trí của bit field phụ thuộc vào Compiler
     + Thứ tự bit field tùy vào Endianess
+  + 
+# Bài 4: Pointer
+## 4.1. Khái niệm và cách sử dụng
+- Trong ngôn ngữ lập trình C, con trỏ (pointer) là một biến chứa địa chỉ bộ nhớ của một đối tượng khác (biến, mảng, hàm). 
+- Cách khai báo: data_type * data_name;
+```c
+    int *ptr_int;
+    char *ptr_char;
+    float *ptr_float;
+```
+- Lấy địa chỉ của một biến:
+```c
+    int x = 10;
+    int *ptr_int = &x;
+    int *ptr_int2;
+    ptr_int2 = &x;
+```
+- Truy cập giá trị (giải tham chiếu):
+```c
+    int x = 10;
+    int *ptr_int = &x;
+    int y = *ptr_int //(y = 10);
+```
+- Kích thước của con trỏ: Kích thước của con trỏ không phụ thuộc vào kiểu dữ liệu mà con trỏ trỏ đến. Kích thước của con trỏ phụ thuộc vào kiến trúc của vi xử lý và trình biên dịch. Ví dụ với kiến trúc x64 thì kích thước của con trỏ là 8 bytes, x32 là 4 bytes.
+## 4.2. Các loại con trỏ đặc biệt
+### 4.2.1. Con trỏ Void
+- Con trỏ Void là con trỏ không trỏ có thể trỏ đến bất kì kiểu dữ liệu nào
+- Để giải tham chiếu với con trỏ Void, cần ép kiểu cho con trỏ Void thành kiểu dữ liệu xác đinh.
+VD:
+```c
+    int x = 3;
+    double y = 3.5;
+    void *ptr = &x;
+    printf("%d\n",*(int*)ptr);
+    ptr = &y;
+    printf("%f\n",*(double*)ptr);
+```
+### 4.2.2. Con trỏ NULL
+- Con trỏ NULL là con trỏ không trỏ đến bất kỳ đối tượng hoặc vùng nhớ cụ thể nào. 
+- Cú pháp: data_type *data_name = NULL;
+- Sử dụng null pointer thường hữu ích để kiểm tra xem một con trỏ đã được khởi tạo và có trỏ đến một vùng nhớ hợp lệ chưa. Tránh dereferencing (sử dụng giá trị mà con trỏ trỏ đến) một null pointer là quan trọng để tránh lỗi chương trình.
+### 4.2.3. Con trỏ trỏ tới hằng
+- Là con trỏ trỏ tới 1 biến là hằng số hoặc biến thông thường, không thể thay đổi được giá trị của biến đó nhưng có thể thay đổi được địa chỉ mà con trỏ trỏ đến.
+VD:
+```c
+    int x = 5;
+    int y =10;
+    const int *ptr = &x;
+    ptr = &y; // Câu lệnh này thực hiện đúng vì con trỏ hằng có thể thay đổi địa chỉ mà nó trỏ tới
+   *ptr = 10; // Câu lệnh này sai vì con trỏ hằng không thể thay đổi giá trị mà ở địa chỉ mà nó trỏ đến
+    printf("%d",*ptr);
+```
+### 4.2.4. Hằng con trỏ
+- Là con trỏ kiẻu hằng số, nó không thể thay đổi được địa chỉ mà nó trỏ đến nhưng có thể thay đổi được giá trị ở địa chỉ mà nó trỏ đến.
+  VD:
+```c
+    int x = 5;
+    int y =10;
+    int *const ptr = &x;
+    ptr = &y; // Câu lệnh này sai vì con trỏ hằng không thể thay đổi địa chỉ mà nó trỏ tới
+   *ptr = 10; // Câu lệnh này đúng vì con trỏ hằng có thể thay đổi giá trị mà ở địa chỉ mà nó trỏ đến
+    printf("%d",*ptr);
+```
+### 4.2.5. Hằng con trỏ hằng
+- Là con trỏ vừa không thể thay đổi được địa chỉ mà con trỏ trỏ đến vừa không thay đổi được giá trị ửo địa chỉ mà con trỏ trỏ đến.
+VD:
+```c
+    int x = 5;
+    int y =10;
+    int *const ptr = &x;
+    ptr = &y; // Câu lệnh này sai vì con trỏ hằng không thể thay đổi địa chỉ mà nó trỏ tới
+   *ptr = 10; // Câu lệnh này sai vì con trỏ hằng không thể thay đổi giá trị mà ở địa chỉ mà nó trỏ đến
+```
+### 4.2.6. Con trỏ hàm
+- Là một biến mà giữ địa chỉ của một hàm. Có nghĩa là, nó trỏ đến vùng nhớ trong bộ nhớ chứa mã máy của hàm được định nghĩa trong chương trình.
+- Trong ngôn ngữ lập trình C, con trỏ hàm cho phép bạn truyền một hàm như là một đối số cho một hàm khác, lưu trữ địa chỉ của hàm trong một cấu trúc dữ liệu, hoặc thậm chí truyền hàm như một giá trị trả về từ một hàm khác.
+- Cú pháp: return_type (*function_name)(param);
+VD:
+```c
+int tong(int a, int b) {
+    return a+b;
+}
+
+int main()
+{
+  int (*tinh)(int, int);
+  tinh = tong;
+  return  tinh(3,4);
+}
+```
+VD: Sử dụng mảng con trỏ hàm:
+```c
+int tong(int a, int b) {
+    return a+b;
+}
+
+int hieu(int a, int b) {
+    return a-b;
+}
+
+int main()
+{
+    int (*calculate[])(int, int) = {tong, hieu};
+    return calculate[1](5,4);
+}
+```
+VD: Sử dụng Call back để gọi hàm
+```c
+int tong(int a, int b) {
+    return a+b;
+}
+
+int hieu(int a, int b) {
+    return a-b;
+}
+
+int calculate(int (*pheptoan)(int, int), int a, int b) {
+    pheptoan(a,b);
+}
+
+int main()
+{
+  return calculate(hieu,6,5);
+}
+```
+### 4.2.7. Con trỏ trỏ đến con trỏ (con trỏ lồng nhau)
+- Là một kiểu dữ liệu trong ngôn ngữ lập trình cho phép bạn lưu trữ địa chỉ của một con trỏ khác.
+VD:
+```c
+int a = 5;
+int *b = &a;
+int **c = &b;
+```
+## 4.2. Endianness
+- Thứ tự lưu giá trị phụ thuộc vào kiến trúc của vi xử lý. 2 kiểu lưu thứ tự phổ biến là Little Endian và Big Endian.
+- Little Endian: Byte thấp nhất sẽ được lưu ở địa chỉ cao nhất.
+|Address:|0x04|0x03|0x02|0x01|
+|Value:0x|12|34|56|78|
+
+- Big Endian: Byte cao nhất sẽ được lưu ở địa chỉ thấp nhất.
+|Address:|0x01|0x02|0x03|0x04|
+|Value:0x|12|34|56|78|
+
+## 4.3. Mảng
+- Mảng là 1 nhóm các ô nhớ liền kề nhau dùng để lưu trữ các phần tử cùng kiểu
+- Tên mảng thực chất là 1 con trỏ, luôn trỏ đến địa chỉ đầu tiên của mảng
+- Để gán địa chỉ của mảng cho một con trỏ chỉ cần viết tên của mảng không cần & 
+- Nếu không gán giá trị trước cho mảng thì phải khai báo số lượng phần tử trong mảng
+- Có thể gán giá trị riêng lẻ cho từng phần tử
+- Truyền mảng vào hàm trong C là truyền tham chiếu (truyền địa chỉ phần tử đầu tiên của mảng vào hàm) arr = &arr = &arr[0]
+- Khi truyền mảng vào hàm thì truyền như biến, không cần &
+- Để trả về mảng từ hàm: cần khai báo kiểu hàm là con trỏ, khai báo mảng static và biến con trỏ để gán mảng trả về
+
+
