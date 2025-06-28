@@ -450,4 +450,45 @@ int **c = &b;
 - Khi truyền mảng vào hàm thì truyền như biến, không cần &
 - Để trả về mảng từ hàm: cần khai báo kiểu hàm là con trỏ, khai báo mảng static và biến con trỏ để gán mảng trả về
 
+# Bài 5: Storage Class Specifier
+## 5.1. Extern
+- Extern trong ngôn ngữ lập trình C/C++ là từ khóa được sử dụng để thông báo rằng một biến hoặc hàm đã được khai báo ở một nơi khác trong chương trình hoặc trong một file nguồn khác. 
+- Điều này giúp chương trình hiểu rằng biến hoặc hàm đã được định nghĩa và sẽ được sử dụng từ một vị trí khác, giúp quản lý sự liên kết giữa các phần khác nhau của chương trình hoặc giữa các file nguồn.
+## 5.2. Static
+### 5.2.1. Local static
+- Khi static được sử dụng với biến cục bộ (khai báo biến trong một hàm):
+    + Giữ phạm vi của biến chỉ trong hàm đó.
+    + Giữ giá trị của biến qua các lần gọi hàm.
+    + Để thay đổi giá trị của biến static trong hàm, cần sử dụng con trỏ toàn cục để trỏ đến địa chỉ của biến static này.
+```c
+void exampleFunction()
+{
+    static int count = 0;  // Biến static giữ giá trị qua các lần gọi hàm
+    count++;
+    printf("Count: %d\n", count);
+}
 
+int main()
+{
+    exampleFunction();  // In ra "Count: 1"
+    exampleFunction();  // In ra "Count: 2"
+    exampleFunction();  // In ra "Count: 3"
+    return 0;
+}
+```
+### 5.2.2. Global static
+- Khi static được sử dụng với biến, hàm toàn cục, nó hạn chế phạm vi của biến, hàm đó chỉ trong file nguồn hiện tại.
+- Ứng dụng: dùng để thiết kế các file thư viện.
+
+### 5.3. Volatile
+- Từ khóa volatile trong ngôn ngữ lập trình C/C++ được sử dụng để báo hiệu cho trình biên dịch rằng một biến có thể thay đổi ngẫu nhiên, ngoài sự kiểm soát của chương trình. Ví dụ:
+    + Bị thay đổi bởi phần cứng (thanh ghi)
+    + Bị thay đổi bởi một luồng khác (đa luồng)
+    + Bị thay đổi bởi ngắt (interrupt handler)
+- Volatile giúp ngăn chặn trình biên dịch tối ưu hóa hoặc xóa bỏ các thao tác trên biến đó, giữ cho các thao tác trên biến được thực hiện như đã được định nghĩa.
+
+### 5.4. Register
+- Chỉ sử dụng cho biến local
+- Từ khóa register được sử dụng để chỉ ra một biến được sử dụng thường xuyên và có thể được lưu trữ trong một thanh ghi máy tính, chứ không phải trong bộ nhớ stack trong RAM, sử dụng để bỏ qua quá trình load dữ liệu từ bộ nhớ. Việc này nhằm tăng tốc độ truy cập.
+- Nếu không đủ thanh ghi, compiler vẫn có thể lưu vào RAM như bình thường.
+- Không có địa chỉ bộ nhớ cụ thể nên không dùng được con trỏ để trỏ tới.
